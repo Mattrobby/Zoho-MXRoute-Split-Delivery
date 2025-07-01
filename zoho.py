@@ -36,7 +36,6 @@ class Zoho:
             'Authorization': 'Zoho-oauthtoken ' + self.access_token,
         }
 
-        print(url)
         resp = requests.get(url, headers=headers)
         return resp.json()
 
@@ -45,13 +44,20 @@ class Zoho:
         data = self.make_call(path)
 
         emails = set()
-        print(data)
         for user in data['data']:
-            print(user)
             for email in user['emailAddress']:
                 emails.add(email['mailId'])
 
         return emails
 
     def get_group_emails(self):
-        pass
+        path = f'api/organization/{self.org_id}/groups'
+        data = self.make_call(path)
+
+        emails = set()
+        for group in data['data']['groups']:
+            emails.add(group['emailId'])
+            for email in group['aliasList']:
+                emails.add(email['mailId'])
+
+        return emails
