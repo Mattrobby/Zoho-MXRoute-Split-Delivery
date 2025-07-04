@@ -2,7 +2,7 @@
 
 I have user two mail server. Zoho because they are super cheap and I don't have to worry about any sort of email configuration (just set the DNS and forget), and more recently I purchased a [MXRoute Lifetime Plan](https://docs.mxroute.com/docs/presales/lifetime.html). I wanted to use MXRoute for all my random projects and services I deploy so I don't have to pay for another email seat on Zoho, however I ran into one issue. MXRoute does not support *split delivery*. 
 
-### **The Two Split Delivery Problems**
+### The Delivery Problems
 
 **1. Relay not permitted:** MXRoute refuses to accept the email from Zoho because it didn't recognize itself as authorized to handle mail for that domain. The server needed to be explicitly told it could accept mail for this domain. Since MXRoute does not support split delivery, we cannot do this.
 
@@ -21,7 +21,7 @@ This toggle essentially controls whether MXRoute thinks it "owns" the domain, bu
 
 ### Resolution
 
-After a whole lot of troubleshooting and searching for an answer I came across [this blog post](https://blog.alexwang.net/google-workspace-mxroute-split-delivery/) from *Alex Wang*. The TLDR is We set up a new MX record (ex: `zoho.example.com`) that points to our Zoho mail server. Then in MXRoute we create a forwarder that points to that MX record:
+After a whole lot of troubleshooting and searching for an answer I came across [this blog post](https://blog.alexwang.net/google-workspace-mxroute-split-delivery/) from *Alex Wang*. We set up a new MX record (ex: `zoho.example.com`) that points to our Zoho mail server. Then in MXRoute we create a forwarder that points to that MX record:
 
 ```
 user@example.com --> user@zoho.example.com
@@ -36,7 +36,7 @@ The issue is that we would have to add a forwarder for every user in Zoho, and a
 
 To run this project, you will need to add the following environment variables to your .env file
 
-### Zoho 
+### Zoho
 
 > [!NOTE]
 > At this time Zoho does not support retrival of *shared inboxes* via their API. Those should be the only address that will have to be manually added to MXRoute.
