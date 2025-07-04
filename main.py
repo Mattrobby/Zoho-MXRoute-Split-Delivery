@@ -21,6 +21,11 @@ def main():
   group_emails = zoho_client.get_group_emails()
   zoho_emails = user_emails | group_emails
 
+  print('The following emails were found on zoho:')
+  for email in zoho_emails:
+    print(f'- {email}')
+  print()
+
   # Getting forwarders from mxroute
   mxroute_client = mxroute.MXroute(user_id, password, server)
   domains = mxroute_client.list_domains()
@@ -29,7 +34,10 @@ def main():
   for domain in domains:
     forwarders = forwarders | mxroute_client.list_forwarders(domain)
 
-  print(forwarders)
+  print('The following forwarders were found on MXRoute:')
+  for email in forwarders:
+    print(f'- {email}')
+  print()
 
   # Create expected forwarder destinations
   expected_forwarders = set()
@@ -39,6 +47,12 @@ def main():
     domain = split[1]
     dest = f'{user}@zoho.{domain}'
     expected_forwarders.add(dest)
+
+    # If that fowarder does not exist in MXRoute then skip it
+    # since you can not add it anyway
+    if not(domain in domains):
+      print(f'Skipping {zoho_email} because the domain "{domain}" does not exist in MXRoute')
+      continue
 
     # Add missing forwarders
     if dest not in forwarders:
@@ -56,4 +70,4 @@ def main():
       mxroute_client.delete_forwarder(original_domain, original_user)
 
 if __name__ == '__main__':
-  main()
+ main()
