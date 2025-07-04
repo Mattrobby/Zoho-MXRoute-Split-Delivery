@@ -58,6 +58,8 @@ def main():
     if dest not in forwarders:
       print(f'Adding forwarder {user}@{domain} --> {dest} to MXRoute')
       mxroute_client.add_forwarder(domain, user, dest)
+    else:
+      print(f'Skipping {user}@{domain} --> {dest} already exists in MXRoute')
 
   # Remove forwarders that are no longer needed
   for forwarder in forwarders:

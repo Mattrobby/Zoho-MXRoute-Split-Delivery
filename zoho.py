@@ -1,5 +1,4 @@
 import requests
-from rich import print
 
 class Zoho:
 
