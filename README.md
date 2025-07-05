@@ -70,3 +70,35 @@ Make sure to uncheck *Has expiry date* is you don't want the key to expire. Then
 ### Optional 
 
 - `CRON_SCHEDULE` - By default set to `*/5 * * * *` (every 5 minutes). Only change if you want the cron to run on a different interval. 
+
+
+## Deploy
+
+To deploy this project, first copy the `.env-example` and set the envrionment variables in there:
+
+```bash
+cp .env-example .env
+```
+
+Once you have done that, you can run the docker container and pass in your `.env` file:
+
+```bash
+
+```
+
+
+## Run Locally
+
+Clone the project
+
+```bash
+git clone https://link-to-project
+cd project-repo
+```
+
+Configure the `.env` as seen in the [*deploy*](#deploy) section
+
+### Docker
+
+
+### Python
