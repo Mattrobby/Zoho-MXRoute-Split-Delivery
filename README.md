@@ -27,32 +27,33 @@ After a whole lot of troubleshooting and searching for an answer I came across [
 user@example.com --> user@zoho.example.com
 ```
 
-The issue is that we would have to add a forwarder for every user in Zoho, and as the words of a wise scolar once said, "Ain't nobady got time for that" - the internet. This script pulls data from both the Zoho and MXRoute APIs and automaticly creates that fowarder for you. 
+The issue is that we would have to add a forwarder for every user in Zoho, and as the words of a wise scholar once said, "Ain't nobody got time for that". This script pulls data from both the Zoho and MXRoute APIs and automatically creates that forwarder for you. 
 
-> **TLDR:** It automaticly pulls your emails from Zoho and creates forwarders in MXRoute. 
-
+> **TLDR:** It automatically pulls your emails from Zoho and creates forwarders in MXRoute. 
 
 ## Environment Variables
-
-To run this project, you will need to add the following environment variables to your .env file
 
 ### Zoho
 
 > [!NOTE]
-> At this time Zoho does not support retrival of *shared inboxes* via their API. Those should be the only address that will have to be manually added to MXRoute.
+> At this time Zoho does not support retrieval of *shared inboxes* via their API. Those should be the only address that will have to be manually added to MXRoute.
 
-In Zoho you are going to have to go to the [Zoho Developer Console](https://accounts.zoho.com/developerconsole) and create a *Self Client*. Once that has been generated please set the following environmt variables:
+In Zoho you are going to have to go to the [Zoho Developer Console](https://accounts.zoho.com/developerconsole) and create a *Self Client*. Once that has been generated please set the following environment variables:
 
 * `CLIENT_ID` - Under the Client Secret tab of your *Self Client*
 * `CLIENT_SECRET` - Under the Client Secret tab of your *Self Client*
 * `ORGANIZATION_ID` - Found in your [Mail Admin](https://mailadmin.zoho.com/cpanel/home.do#organization/profile) console
+
+**Required API Scopes:**
+- `ZohoMail.organization.accounts.READ`
+- `ZohoMail.organization.groups.READ`
 
 For more information please see [Zoho's OAuth 2.0 Guide](https://www.zoho.com/mail/help/api/using-oauth-2.html). 
 
 ### MXRoute
 
 > [!NOTE]
-> DirectAdmin newer api does not yet support email forwarders. Due to this, the scripts uses the [legacy API](https://docs.directadmin.com/developer/api/legacy-api.html).
+> DirectAdmin newer api does not yet support email forwarders. Due to this, the script uses the [legacy API](https://docs.directadmin.com/developer/api/legacy-api.html).
 
 Log into DirectAdmin and head to `Advanced Features > Login Keys`. Create a new key and give it the following permissions:
 
@@ -61,44 +62,60 @@ Log into DirectAdmin and head to `Advanced Features > Login Keys`. Create a new 
 - `CMD_EMAIL_FORWARDER`
 - `CMD_EMAIL_FORWARDER_MODIFY`
 
-Make sure to uncheck *Has expiry date* is you don't want the key to expire. Then just set the following environment variables:
+Make sure to uncheck *Has expiry date* if you don't want the key to expire. Then just set the following environment variables:
 
 - `USER_ID` - Username of the admin user without `@domain.tld` at the end
 - `PASSWORD` - Login key you generated
-- `SERVER` - Host of you MXRoute server (ex: `https://subdomain.mxrouting.net:2222`)
+- `SERVER` - Host of your MXRoute server (ex: `https://subdomain.mxrouting.net:2222`)
 
 ### Optional 
 
 - `CRON_SCHEDULE` - By default set to `*/5 * * * *` (every 5 minutes). Only change if you want the cron to run on a different interval. 
-
+- `LOG_LEVEL` - Set logging level: `DEBUG`, `INFO`, `WARNING`, `ERROR` (default: `INFO`)
 
 ## Deploy
 
-To deploy this project, first copy the `.env-example` and set the envrionment variables in there:
+To deploy this project, first copy the `.env.example` and set the environment variables in there:
 
 ```bash
-cp .env-example .env
+cp .env.example .env
+# Edit .env with your actual credentials
 ```
 
-Once you have done that, you can run the docker container and pass in your `.env` file:
+Once you have done that, you can build and run the docker container:
 
 ```bash
+# Build the image
+docker build . -t zoho-mxroute-sync
 
+# Run with environment file
+docker run -d \
+  --name zoho-mxroute-sync \
+  --restart unless-stopped \
+  --env-file .env \
+  -v ./logs:/app/logs \
+  zoho-mxroute-sync
 ```
-
 
 ## Run Locally
 
-Clone the project
+Clone the project:
 
 ```bash
-git clone https://link-to-project
-cd project-repo
+git clone https://github.com/Mattrobby/Zoho-MXRoute-Split-Delivery
+cd Zoho-MXRoute-Split-Delivery
 ```
 
-Configure the `.env` as seen in the [*deploy*](#deploy) section
+Configure the `.env` as seen in the [*deploy*](#deploy) section, then you can create your virtual environment and run the project: 
 
-### Docker
+```bash
+# Create Virtual Environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
+# Install dependencies
+pip install -r requirements.txt
 
-### Python
+# Run the project
+python main.py
+```
