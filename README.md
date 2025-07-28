@@ -79,7 +79,6 @@ To deploy this project, first copy the `.env.example` and set the environment va
 
 ```bash
 cp .env.example .env
-# Edit .env with your actual credentials
 ```
 
 Once you have done that, you can build and run the docker container:
